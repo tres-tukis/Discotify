@@ -12,6 +12,7 @@ repositories {
 dependencies {
 
     implementation("net.dv8tion:JDA:5.6.1")
+    implementation("dev.arbjerg:lavaplayer:2.2.7")
     testImplementation(kotlin("test"))
 }
 

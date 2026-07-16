@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.JDA
 import org.discordfy.listeners.CommandListener
 import net.dv8tion.jda.api.interactions.commands.build.Commands
+import org.discordfy.audio.AudioPlayerManager
+
 
 class DiscordfyBot {
 
@@ -21,6 +23,8 @@ class DiscordfyBot {
             .build()
 
         jda.awaitReady()
+
+        AudioPlayerManager.initialize()
 
         jda.updateCommands()
             .addCommands(
