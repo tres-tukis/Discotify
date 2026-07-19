@@ -7,8 +7,6 @@ object JoinCommand {
 
     fun execute(event: SlashCommandInteractionEvent) {
 
-        println("🔥 EJECUTANDO JOIN COMMAND")
-
         val member = event.member
         val voiceState = member?.voiceState
 
