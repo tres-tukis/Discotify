@@ -4,13 +4,22 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager as LavaAudioPl
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers
 
+
+
+
 object AudioPlayerManager {
 
     private val playerManager: LavaAudioPlayerManager =
         DefaultAudioPlayerManager()
 
     fun initialize() {
-        AudioSourceManagers.registerRemoteSources(playerManager)
+
+        AudioSourceManagers.registerRemoteSources(
+            playerManager
+        )
+
+        println("Fuentes de Audio Registradas correctamente")
+
     }
 
     fun getPlayerManager(): LavaAudioPlayerManager {

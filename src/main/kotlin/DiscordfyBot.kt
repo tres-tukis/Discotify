@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag
 import moe.kyokobot.libdave.NativeDaveFactory
 import moe.kyokobot.libdave.jda.LDJDADaveSessionFactory
 import net.dv8tion.jda.api.audio.AudioModuleConfig
+import net.dv8tion.jda.api.interactions.commands.OptionType
 
 
 class DiscordfyBot {
@@ -46,9 +47,9 @@ class DiscordfyBot {
 
         val jda = builder.build()
 
-        jda.awaitReady()
-
         AudioPlayerManager.initialize()
+
+        jda.awaitReady()
 
         jda.updateCommands()
             .addCommands(
@@ -60,13 +61,32 @@ class DiscordfyBot {
                 Commands.slash(
                     "join",
                     "Hace que Discotify entre al canal de voz."
+                ),
+
+                Commands.slash(
+                    "play",
+                    "Reproduce una Canción"
                 )
 
+                    .addOption(
+                        OptionType.STRING,
+                        "query",
+                        "URL o Búsqueda de la Canción",
+                        true
+                    )
+
             )
-            .queue{
-
-                println("Discotify está conectado a Discord!")
-            }
-
+            .queue(
+                { commands ->
+                println("✅ Slash commands registrados correctamente")
+                    commands.forEach {
+                        println("- $ {it.me}")
+                    }
+            },
+        {
+            println("❌ Error registrando comandos")
+            it.printStackTrace()
+        }
+            )
     }
 }

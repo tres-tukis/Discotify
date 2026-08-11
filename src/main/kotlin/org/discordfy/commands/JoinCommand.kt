@@ -1,7 +1,8 @@
 package org.discordfy.commands
 
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
-import org.discordfy.audio.MusicManagerProvider
+import org.discordfy.audio.MusicService
+
 
 object JoinCommand {
 
@@ -25,7 +26,7 @@ object JoinCommand {
         val audioManager = event.guild!!.audioManager
 
         val musicManager =
-            MusicManagerProvider.getMusicManager(event.guild!!)
+            MusicService.getGuildMusicManager(event.guild!!)
 
         event.reply("🎧 Me he unido al canal **${channel.name}**.")
             .queue()
@@ -36,7 +37,16 @@ object JoinCommand {
 
         audioManager.openAudioConnection(channel)
 
-        println("solicitud de conecion enviada")
+        Thread.sleep(2000)
+
+        Thread {
+            Thread.sleep(5000)
+
+            println("Estado:")
+            println(audioManager.connectionStatus)
+        }.start()
+
+        println("solicitud de conexion enviada")
 
 
     }
