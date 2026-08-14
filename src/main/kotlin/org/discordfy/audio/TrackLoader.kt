@@ -16,6 +16,19 @@ object TrackLoader {
 
         println("🔎 TrackLoader buscando: $query")
 
+        val identifier =
+            if(
+                query.startsWith("http://") ||
+                query.startsWith("https://") ||
+                query.startsWith("scsearch:")
+            ){
+                query
+            } else {
+                "scsearch:$query"
+            }
+
+        println("🔎 Identificador usado por LavaPlayer: $identifier")
+
         guild.audioManager.sendingHandler =
             musicManager.sendHandler
 
@@ -23,7 +36,7 @@ object TrackLoader {
             .getPlayerManager()
             .loadItemOrdered(
                 musicManager,
-                query,
+                identifier,
                 object : AudioLoadResultHandler {
 
                     override fun trackLoaded(track: AudioTrack) {
@@ -36,17 +49,14 @@ object TrackLoader {
 
                     override fun playlistLoaded(playlist: AudioPlaylist) {
 
-                        println("📀 PLAYLIST CARGADA: ${playlist.name}")
+                        println("🔎 Resultados encontrados: ${playlist.tracks.size}")
 
-                        playlist.tracks.forEach {
-
-                            println("🎵 Añadiendo: ${it.info.title}")
-
-                            musicManager.scheduler.queueTrack(it)
-
-                        }
+                        musicManager.scheduler.queueSearchResults(
+                            playlist.tracks
+                        )
 
                     }
+                    
 
                     override fun noMatches() {
 

@@ -13,6 +13,11 @@ class TrackScheduler(
 
     private val queue = LinkedBlockingQueue<AudioTrack>()
 
+    private val fallbackQueue = LinkedBlockingQueue<AudioTrack>()
+
+    private var handlingFallback = false
+
+
     fun queueTrack(track: AudioTrack) {
 
         println("🎵 Track recibido: ${track.info.title}")
@@ -32,11 +37,57 @@ class TrackScheduler(
 
     }
 
+
+    fun queueSearchResults(tracks: List<AudioTrack>) {
+        if (tracks.isEmpty()) {
+            println("❌ No hay resultados para reproducir")
+            return
+        }
+
+        fallbackQueue.clear()
+
+        val firstTrack = tracks.first()
+
+        tracks.drop(1).forEach {
+            fallbackQueue.offer(it)
+        }
+
+        println("🎯 Resultado principal: ${firstTrack.info.title}")
+        println("🔧 Resultados de fallback disponibles: ${fallbackQueue.size}")
+
+        queueTrack(firstTrack)
+    }
+
+
     fun nextTrack() {
 
         player.startTrack(queue.poll(), false)
 
     }
+
+
+    private fun tryNextFallback(): Boolean {
+
+        val next = fallbackQueue.poll()
+
+        if (next == null) {
+            println("❌ No quedan resultados alternativos")
+            return false
+        }
+
+        println("🔄 Intentando resultado alternativo:")
+        println("🎵 ${next.info.title}")
+
+        handlingFallback = true
+
+        val started = player.startTrack(next,false)
+
+        println("▶️ Fallback startTrack devolvió: $started")
+
+        return started
+
+        }
+
 
     override fun onTrackStart(
         player: AudioPlayer,
@@ -53,8 +104,13 @@ class TrackScheduler(
     ) {
 
         println("💥 TRACK EXCEPTION")
+        println("❌ Falló: ${track.info.title}")
 
         exception.printStackTrace()
+
+        if (!tryNextFallback()) {
+            println("❌ No hay más resultados alternativos")
+        }
 
     }
 
@@ -77,6 +133,10 @@ class TrackScheduler(
         println("🏁 TRACK END:")
         println(endReason)
 
+        if (handlingFallback) {
+            handlingFallback = false
+            return
+        }
 
         if (endReason.mayStartNext) {
             nextTrack()
